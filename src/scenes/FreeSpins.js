@@ -10,16 +10,13 @@ class FreeSpins extends Phaser.Scene {
         this.allow = true;
         this.isPressSpinToStartClicked = false;
         this.spinDate = 0;
-        this.array = [];
         this.isEndOfTheGame = false;
         this.freeSpinStart = false;
 
         this.tileWidth = 250;
-        this.tileHeight = 136;
+        this.tileHeight = 138;
 
-        for (let i = 0; i < 18; i++) {
-            this.array.push(60 + (250 * i))
-        }
+        this.array = Array.from({length: 18}, (_, index) => 60 + (250 * index));
 
         this.fireballNames = {
             '50x': 60,
@@ -42,8 +39,15 @@ class FreeSpins extends Phaser.Scene {
         this.cameras.main.setViewport(0, isMobile ? -15 : 0, gameWidth, height);
         this.time.delayedCall(game.scene.keys['Musics'].sounds['alarm']().duration * 1000 - 150, this.createBigFireball, [], this);
 
+        // нужна для наложения поверх основной рамки, для перекрытия выходящих за рамки фаерболлов
+        this.frameWithoutShadowWithLines = this.add.image(offsetX, 857, 'frameWithoutShadowWithLines')
+            .setScale(0.54)
+            .setOrigin(0.5, 1)
+            .setDepth(280)
+            .setAlpha(0);
+
         // нужна для наложения поверх основной рамки, для перекрытия элементов
-        this.bigFrame = this.add.image(offsetX, 857, 'bigFrameWithoutShadow')
+        this.frameWithoutShadowAndLines = this.add.image(offsetX, 857, 'frameWithoutShadowAndLines')
             .setScale(0.54)
             .setOrigin(0.5, 1)
             .setDepth(350)
@@ -80,7 +84,7 @@ class FreeSpins extends Phaser.Scene {
         const shape = this.make.graphics();
 
         shape.beginPath();
-        shape.fillRect(x, y, 250, 70);
+        shape.fillRect(x, y, 250, 74);
 
         return shape.createGeometryMask();
     }
@@ -119,7 +123,8 @@ class FreeSpins extends Phaser.Scene {
         this.secondFrame.anims.play('secondFrame');
 
         this.secondFrame.once('animationcomplete', () => {
-            this.bigFrame.setAlpha(1);
+            this.frameWithoutShadowWithLines.setAlpha(1);
+            this.frameWithoutShadowAndLines.setAlpha(1);
             this.createCells();
         });
     }
@@ -137,7 +142,7 @@ class FreeSpins extends Phaser.Scene {
                 this.rows[`${i}`][`${j}`] = {};
                 const y = this.array[Phaser.Math.Between(0, 17)];
 
-                const cell = this.add.tileSprite(offsetX - 220 + (110 * j), 185 + (74.2 * i), this.tileWidth, this.tileHeight, 'secondBar')
+                const cell = this.add.tileSprite(offsetX - 220 + (110 * j), 185 + (74 * i), this.tileWidth, this.tileHeight, 'secondBar')
                     .setOrigin(0.5, 0)
                     .setScale(0.53)
                     .setDepth(this.isFireballOffset(y) ? 200 : 20);
@@ -321,7 +326,7 @@ class FreeSpins extends Phaser.Scene {
             .setDepth(250)
             .play(fireballName);
 
-        fireball.setMask(this.createMask(x - this.tileWidth / 2, y));
+        fireball.setMask(this.createMask(x - this.tileWidth / 2, y - 2));
 
         const exp = this.add.sprite(x, y + (height * scaleY) / 2, 'exp').setScale(0.42).setDepth(250).play('exp');
         exp.once('animationcomplete', () => exp.destroy());

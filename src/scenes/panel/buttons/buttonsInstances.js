@@ -2,8 +2,8 @@ import {Button} from "../../../Button";
 import {game} from "../../../Config";
 
 class AutoPlayButton extends Button {
-    constructor(scene, x, y, scale, frame = 0) {
-        super(scene, x, y, 'autoPlayBtn', scale, frame);
+    constructor(scene, x, y, scale) {
+        super(scene, x, y, 'autoPlayBtn', scale, 0);
 
         this.on('pointerup', () => {
             if (!game.scene.keys['Panel'].buttonsClicked.spin && !game.scene.keys['FreeSpins'].freeSpinStart && !game.scene.keys['FreeGames'].isFreeGamesStart) {
@@ -15,8 +15,8 @@ class AutoPlayButton extends Button {
 }
 
 class SpinButton extends Button {
-    constructor(scene, x, y, scale, frame = 0) {
-        super(scene, x, y, 'spinBtn', scale, frame);
+    constructor(scene, x, y, scale) {
+        super(scene, x, y, 'spinBtn', scale, 0);
 
         this.on('pointerup', () => {
             if (!game.scene.keys['Panel'].buttonsClicked.autoPlay && !game.scene.keys['FreeSpins'].freeSpinStart && !game.scene.keys['FreeGames'].isFreeGamesStart) {
@@ -37,8 +37,8 @@ class SpinButton extends Button {
 }
 
 class DecreaseButton extends Button {
-    constructor(scene, x, y, scale, frame = 0) {
-        super(scene, x, y, 'decreaseBtn', scale, frame);
+    constructor(scene, x, y, scale) {
+        super(scene, x, y, 'decreaseBtn', scale, 0);
 
         this.on('pointerup', () => {
             if (!game.scene.keys['Panel'].buttonsClicked.spin && !game.scene.keys['Panel'].buttonsClicked.autoPlay && !game.scene.keys['FreeSpins'].freeSpinStart && !game.scene.keys['FreeGames'].isFreeGamesStart) {
@@ -49,8 +49,8 @@ class DecreaseButton extends Button {
 }
 
 class IncreaseButton extends Button {
-    constructor(scene, x, y, scale, frame = 0) {
-        super(scene, x, y, 'increaseBtn', scale, frame);
+    constructor(scene, x, y, scale) {
+        super(scene, x, y, 'increaseBtn', scale, 0);
 
         this.on('pointerup', () => {
             if (!game.scene.keys['Panel'].buttonsClicked.spin && !game.scene.keys['Panel'].buttonsClicked.autoPlay && !game.scene.keys['FreeSpins'].freeSpinStart && !game.scene.keys['FreeGames'].isFreeGamesStart) {
@@ -61,8 +61,8 @@ class IncreaseButton extends Button {
 }
 
 class InfoButton extends Button {
-    constructor(scene, x, y, scale, frame = 0) {
-        super(scene, x, y, 'infoBtn', scale, frame);
+    constructor(scene, x, y, scale) {
+        super(scene, x, y, 'infoBtn', scale, 0);
 
         this.on('pointerup', () => {
             if (!game.scene.keys['Panel'].buttonsClicked.spin && !game.scene.keys['Panel'].buttonsClicked.autoPlay && !game.scene.keys['FreeSpins'].freeSpinStart && !game.scene.keys['FreeGames'].isFreeGamesStart) {
@@ -74,8 +74,8 @@ class InfoButton extends Button {
 }
 
 class DenomButtons extends Button {
-    constructor(scene, x, y, scale, frame = 0) {
-        super(scene, x, y, 'denomButtons', scale, frame);
+    constructor(scene, x, y, scale) {
+        super(scene, x, y, 'denomButtons', scale, 0);
 
         this.on('pointerup', () => {
             if (!game.scene.keys['Panel'].buttonsClicked.spin && !game.scene.keys['Panel'].buttonsClicked.autoPlay && !game.scene.keys['FreeSpins'].freeSpinStart && !game.scene.keys['FreeGames'].isFreeGamesStart) {
@@ -89,8 +89,8 @@ class DenomButtons extends Button {
 }
 
 class VolumeButton extends Button {
-    constructor(scene, x, y, scale, frame = 0) {
-        super(scene, x, y, 'volumeBtn', scale, frame);
+    constructor(scene, x, y, scale) {
+        super(scene, x, y, 'volumeBtn', scale, 0);
 
         this.on('pointerup', () => {
             game.scene.keys['Panel'].updateVolumeFrame();
@@ -100,8 +100,8 @@ class VolumeButton extends Button {
 }
 
 class GameRulesButton extends Button {
-    constructor(scene, x, y, scale, frame = 0) {
-        super(scene, x, y, 'gameRules', scale, frame);
+    constructor(scene, x, y, scale) {
+        super(scene, x, y, 'gameRules', scale, 0);
 
         this.on('pointerup', () => {
             scene.togglePanelVisibility(false);

@@ -1,4 +1,4 @@
-import {gameWidth as width, height, offsetX, frameElems, fireBalls, isMobile} from "../Config";
+import {gameWidth as width, height, offsetX, symbols, fireBalls, isMobile} from "../Config";
 
 class Loader extends Phaser.Scene {
     constructor() {
@@ -34,10 +34,10 @@ class Loader extends Phaser.Scene {
             this.load.image(`page_${index + 1}`, `assets/rules/${index + 1}.png`);
         });
 
-        this.load.image('rulesButtonsBg', 'assets/buttons/rulesButtons.png');
-        this.load.image('previousPage', 'assets/buttons/previousPage.png');
-        this.load.image('returnToGame', 'assets/buttons/returnToGame.png');
-        this.load.image('nextPage', 'assets/buttons/nextPage.png');
+        this.load.image('rulesButtonsBg', 'assets/panel/rulesButtons.png');
+        this.load.image('previousPage', 'assets/panel/previousPage.png');
+        this.load.image('returnToGame', 'assets/panel/returnToGame.png');
+        this.load.image('nextPage', 'assets/panel/nextPage.png');
 
         ////////////////////////////////////////////////////////////////////
         // FreeGames
@@ -46,9 +46,9 @@ class Loader extends Phaser.Scene {
         this.load.multiatlas('freeGamesFrame', 'assets/freeGames/frame/frame.json', 'assets/freeGames/frame');
         this.load.multiatlas('freeGamesMoneyDisplay', 'assets/freeGames/moneyDisplay/moneyDisplay.json', 'assets/freeGames/moneyDisplay');
         this.load.multiatlas('freeGamesText', 'assets/freeGames/freeGamesText/freeGamesText.json', 'assets/freeGames/freeGamesText');
-        this.load.multiatlas('freeGames', 'assets/elements/freeGames/freeGames.json', 'assets/elements/freeGames');
+        this.load.multiatlas('freeGames', 'assets/slots/symbols/freeGames/freeGames.json', 'assets/slots/symbols/freeGames');
         this.load.multiatlas('confetti', 'assets/freeGames/confetti/confetti.json', 'assets/freeGames/confetti');
-        this.load.image('freeGamesBar', 'assets/freeGamesBar.png');
+        this.load.image('freeGamesBar', 'assets/freeGames/freeGamesBar.png');
         this.load.image('frameWithoutBg', 'assets/freeGames/frame/frameWithoutBg.png');
         this.load.image('totalBonusWin', 'assets/freeGames/totalBonusWin.png');
         this.load.image('freeGamesCount', 'assets/freeGames/freeGamesCount.png');
@@ -67,29 +67,30 @@ class Loader extends Phaser.Scene {
         // FreeSpins
         ////////////////////////////////////////////////////////////////////
 
-        this.load.image('bigFrameWithoutShadow', 'assets/frame/frameWithoutShadow.png');
-        this.load.image('freeSpinText', 'assets/freeSpinText.png');
-        this.load.image('moreToUnlock', 'assets/moreToUnlock.png');
-        this.load.image('featureComplete', 'assets/featurecomplete.png');
-        this.load.image('winner', 'assets/winner.png');
-        this.load.image('secondBar', 'assets/secondBar.png');
-        this.load.image('winnerDisplay', 'assets/blueframe0.png');
-        this.load.multiatlas('exp', 'assets/exp/exp.json', 'assets/exp');
-        this.load.multiatlas('borderFire', 'assets/borderFire/borderFire.json', 'assets/borderFire');
-        this.load.multiatlas('blow', 'assets/blow/blow.json', 'assets/blow');
-        this.load.multiatlas('cellFire', 'assets/cellFire/cellFire.json', 'assets/cellFire');
-        this.load.multiatlas('secondFrame', 'assets/frame/frame.json', 'assets/frame');
-        this.load.multiatlas('bigFire', 'assets/bigFire/bigFire.json', 'assets/bigFire');
-        this.load.multiatlas('glass', 'assets/glass/glass.json', 'assets/glass');
-        this.load.multiatlas('sparks', 'assets/sparks/sparks.json', 'assets/sparks');
+        this.load.image('frameWithoutShadowWithLines', 'assets/freeSpins/frame/frameWithoutShadowWithLines.png');
+        this.load.image('frameWithoutShadowAndLines', 'assets/freeSpins/frame/frameWithoutShadowAndLines.png');
+        this.load.image('freeSpinText', 'assets/freeSpins/freeSpinText.png');
+        this.load.image('moreToUnlock', 'assets/freeSpins/moreToUnlock.png');
+        this.load.image('featureComplete', 'assets/freeSpins/featurecomplete.png');
+        this.load.image('winner', 'assets/freeSpins/winner.png');
+        this.load.image('secondBar', 'assets/freeSpins/secondBar.png');
+        this.load.image('winnerDisplay', 'assets/freeSpins/blueframe0.png');
+        this.load.multiatlas('exp', 'assets/freeSpins/exp/exp.json', 'assets/freeSpins/exp');
+        this.load.multiatlas('borderFire', 'assets/freeSpins/borderFire/borderFire.json', 'assets/freeSpins/borderFire');
+        this.load.multiatlas('blow', 'assets/freeSpins/blow/blow.json', 'assets/freeSpins/blow');
+        this.load.multiatlas('cellFire', 'assets/freeSpins/cellFire/cellFire.json', 'assets/freeSpins/cellFire');
+        this.load.multiatlas('secondFrame', 'assets/freeSpins/frame/frame.json', 'assets/freeSpins/frame');
+        this.load.multiatlas('bigFire', 'assets/freeSpins/bigFire/bigFire.json', 'assets/freeSpins/bigFire');
+        this.load.multiatlas('glass', 'assets/freeSpins/glass/glass.json', 'assets/freeSpins/glass');
+        this.load.multiatlas('sparks', 'assets/freeSpins/sparks/sparks.json', 'assets/freeSpins/sparks');
 
-        this.load.spritesheet('locks', 'assets/locks.png', {
+        this.load.spritesheet('locks', 'assets/freeSpins/locks.png', {
             frameWidth: 90,
             frameHeight: 85,
             endFrame: 17
         });
 
-        this.load.spritesheet('spinsRemaining', 'assets/spinsRemaining.png', {
+        this.load.spritesheet('spinsRemaining', 'assets/freeSpins/spinsRemaining.png', {
             frameWidth: 278,
             frameHeight: 44,
             endFrame: 4
@@ -99,22 +100,23 @@ class Loader extends Phaser.Scene {
         // Slots
         ////////////////////////////////////////////////////////////////////
 
-        this.load.image('frame', 'assets/frame.png');
-        this.load.image('frameWithoutShadow', 'assets/frameWithoutShadow.png');
-        this.load.image('cells', 'assets/bar.png');
-        this.load.multiatlas('bigWin', 'assets/bigWin/bigWin.json', 'assets/bigWin');
+        this.load.image('frame', 'assets/slots/frame.png');
+        this.load.image('frameWithoutShadow', 'assets/slots/frameWithoutShadow.png');
+        this.load.image('cells', 'assets/slots/bar.png');
+        this.load.multiatlas('bigWin', 'assets/slots/bigWin/bigWin.json', 'assets/slots/bigWin');
 
-        frameElems.forEach(name => {
+        symbols.forEach(name => {
             this.load.multiatlas(`${name}`,
-                `assets/elements/${name}/${name}.json`,
-                `assets/elements/${name}`
+                `assets/slots/symbols/${name}/${name}.json`,
+                `assets/slots/symbols/${name}`
             )
         });
+
         fireBalls.forEach(name => {
             this.load.multiatlas(
                 `${name}`,
-                `assets/elements/fireBalls/${name}/${name}.json`,
-                `assets/elements/fireBalls/${name}`
+                `assets/slots/symbols/fireBalls/${name}/${name}.json`,
+                `assets/slots/symbols/fireBalls/${name}`
             )
         });
 
@@ -122,7 +124,7 @@ class Loader extends Phaser.Scene {
         // OverlayWindow
         ////////////////////////////////////////////////////////////////////
 
-        this.load.multiatlas('brill', 'assets/brill/brill.json', 'assets/brill');
+        this.load.multiatlas('brill', 'assets/slots/brill/brill.json', 'assets/slots/brill');
         this.load.multiatlas('youWon', 'assets/freeGames/youWon/youWon.json', 'assets/freeGames/youWon');
         this.load.multiatlas('pressToStart', 'assets/freeGames/pressToStart/pressToStart.json', 'assets/freeGames/pressToStart');
 
@@ -130,12 +132,12 @@ class Loader extends Phaser.Scene {
         // Denom
         ////////////////////////////////////////////////////////////////////
 
-        this.load.image('denomButtonsDisplay', 'assets/buttons/denomButtonsDisplay.png');
-        this.load.image('selectDenomText', 'assets/buttons/selectDenomText.png');
-        this.load.image('balanceText', 'assets/buttons/balanceText.png');
+        this.load.image('denomButtonsDisplay', 'assets/panel/denomButtonsDisplay.png');
+        this.load.image('selectDenomText', 'assets/panel/selectDenomText.png');
+        this.load.image('balanceText', 'assets/panel/balanceText.png');
 
         ['1c', '2c', '5c', '10c', '1d'].forEach(button => {
-            this.load.spritesheet(`${button}`, `assets/buttons/${button}.png`, {
+            this.load.spritesheet(`${button}`, `assets/panel/${button}.png`, {
                 frameWidth: 238,
                 frameHeight: 199,
                 endFrame: 2
@@ -147,70 +149,70 @@ class Loader extends Phaser.Scene {
         ////////////////////////////////////////////////////////////////////
 
         if (isMobile) {
-            this.load.spritesheet('spinBtn', 'assets/buttons/mobile/spin.png', {
+            this.load.spritesheet('spinBtn', 'assets/panel/mobile/spin.png', {
                 frameWidth: 200,
                 frameHeight: 220,
                 endFrame: 3
             });
-            this.load.spritesheet('infoBtn', 'assets/buttons/mobile/info.png', {
+            this.load.spritesheet('infoBtn', 'assets/panel/mobile/info.png', {
                 frameWidth: 196,
                 frameHeight: 92,
                 endFrame: 2
             });
-            this.load.spritesheet('decreaseBtn', 'assets/buttons/mobile/decrease.png', {
+            this.load.spritesheet('decreaseBtn', 'assets/panel/mobile/decrease.png', {
                 frameWidth: 55,
                 frameHeight: 92,
                 endFrame: 2
             });
-            this.load.spritesheet('increaseBtn', 'assets/buttons/mobile/increase.png', {
+            this.load.spritesheet('increaseBtn', 'assets/panel/mobile/increase.png', {
                 frameWidth: 56,
                 frameHeight: 92,
                 endFrame: 2
             });
-            this.load.spritesheet('denomButtons', 'assets/buttons/mobile/denomButtons.png', {
+            this.load.spritesheet('denomButtons', 'assets/panel/mobile/denomButtons.png', {
                 frameWidth: 199,
                 frameHeight: 123,
                 endFrame: 5
             });
 
-            this.load.image('panel', 'assets/buttons/mobile/mobileBottomPanel.png');
+            this.load.image('panel', 'assets/panel/mobile/mobileBottomPanel.png');
         } else {
-            this.load.spritesheet('spinBtn', 'assets/buttons/spin.png', {
+            this.load.spritesheet('spinBtn', 'assets/panel/spin.png', {
                 frameWidth: 157,
                 frameHeight: 144,
                 endFrame: 3
             });
-            this.load.spritesheet('infoBtn', 'assets/buttons/info.png', {
+            this.load.spritesheet('infoBtn', 'assets/panel/info.png', {
                 frameWidth: 104,
                 frameHeight: 104,
                 endFrame: 2
             });
-            this.load.spritesheet('decreaseBtn', 'assets/buttons/decrease.png', {
+            this.load.spritesheet('decreaseBtn', 'assets/panel/decrease.png', {
                 frameWidth: 79,
                 frameHeight: 120,
                 endFrame: 2
             });
-            this.load.spritesheet('increaseBtn', 'assets/buttons/increase.png', {
+            this.load.spritesheet('increaseBtn', 'assets/panel/increase.png', {
                 frameWidth: 79,
                 frameHeight: 119,
                 endFrame: 2
             });
-            this.load.spritesheet('denomButtons', 'assets/buttons/denomButtons.png', {
+            this.load.spritesheet('denomButtons', 'assets/panel/denomButtons.png', {
                 frameWidth: 187,
                 frameHeight: 144,
                 endFrame: 5
             });
 
-            this.load.image('panel', 'assets/buttons/bottomPanel.png');
+            this.load.image('panel', 'assets/panel/bottomPanel.png');
         }
 
-        this.load.spritesheet('autoPlayBtn', 'assets/buttons/auto-play.png', {
+        this.load.spritesheet('autoPlayBtn', 'assets/panel/auto-play.png', {
             frameWidth: 188,
             frameHeight: 144,
             endFrame: 4
         });
 
-        this.load.spritesheet('volumeBtn', 'assets/buttons/volume.png', {
+        this.load.spritesheet('volumeBtn', 'assets/panel/volume.png', {
             frameWidth: 103,
             frameHeight: 104,
             endFrame: 4
@@ -220,33 +222,33 @@ class Loader extends Phaser.Scene {
         ///////////////////////////////////////
 
         this.load.script('webfont', 'https://ajax.googleapis.com/ajax/libs/webfont/1.6.26/webfont.js');
-        this.load.image('winText', 'assets/buttons/winText.png');
-        this.load.image('goodLuckText', 'assets/buttons/goodLuckText.png');
-        this.load.image('gameOverText', 'assets/buttons/gameOverText.png');
-        this.load.image('goodLuck', 'assets/buttons/goodLuck.png');
-        this.load.image('buttonBg', 'assets/buttons/buttonBg.png');
-        this.load.image('gameRules', 'assets/buttons/gameRules.png');
-        this.load.image('pressToSpin', 'assets/buttons/pressToSpin.png');
+        this.load.image('winText', 'assets/panel/winText.png');
+        this.load.image('goodLuckText', 'assets/panel/goodLuckText.png');
+        this.load.image('gameOverText', 'assets/panel/gameOverText.png');
+        this.load.image('goodLuck', 'assets/panel/goodLuck.png');
+        this.load.image('buttonBg', 'assets/panel/buttonBg.png');
+        this.load.image('gameRules', 'assets/panel/gameRules.png');
+        this.load.image('pressToSpin', 'assets/panel/pressToSpin.png');
 
         ////////////////////////////////////////////////////////////////////
         // MainWindow
         ////////////////////////////////////////////////////////////////////
 
-        this.load.image('roofPart1', 'assets/roof.png');
-        this.load.image('roofPart2', 'assets/roof1.png');
-        this.load.image('background', 'assets/background.png');
-        this.load.image('title', 'assets/title.png');
-        this.load.image('title1', 'assets/title1.png');
-        this.load.image('fireBallRight', 'assets/fireBallRight.png');
-        this.load.image('fireBallLeft', 'assets/fireBallLeft.png');
-        this.load.image('staticOlveraStreet', 'assets/olvera/staticOlveraStreet.png');
-        this.load.image('jackpot1', 'assets/jackpotFrames/1.png');
-        this.load.image('jackpot2', 'assets/jackpotFrames/2.png');
-        this.load.image('jackpot3', 'assets/jackpotFrames/3.png');
-        this.load.image('jackpot4', 'assets/jackpotFrames/4.png');
+        this.load.image('roofPart1', 'assets/mainWindow/roof.png');
+        this.load.image('roofPart2', 'assets/mainWindow/roof1.png');
+        this.load.image('background', 'assets/mainWindow/background.png');
+        this.load.image('title', 'assets/mainWindow/title.png');
+        this.load.image('title1', 'assets/mainWindow/title1.png');
+        this.load.image('fireBallRight', 'assets/mainWindow/fireBallRight.png');
+        this.load.image('fireBallLeft', 'assets/mainWindow/fireBallLeft.png');
+        this.load.image('staticOlveraStreet', 'assets/mainWindow/olvera/staticOlveraStreet.png');
+        this.load.image('jackpot1', 'assets/mainWindow/jackpotFrames/1.png');
+        this.load.image('jackpot2', 'assets/mainWindow/jackpotFrames/2.png');
+        this.load.image('jackpot3', 'assets/mainWindow/jackpotFrames/3.png');
+        this.load.image('jackpot4', 'assets/mainWindow/jackpotFrames/4.png');
 
-        this.load.multiatlas('olvera', 'assets/olvera/olvera.json', 'assets/olvera');
-        this.load.multiatlas('logo', 'assets/logo/logo.json', 'assets/logo');
+        this.load.multiatlas('olvera', 'assets/mainWindow/olvera/olvera.json', 'assets/mainWindow/olvera');
+        this.load.multiatlas('logo', 'assets/mainWindow/logo/logo.json', 'assets/mainWindow/logo');
     }
 
     create() {
@@ -313,7 +315,7 @@ class Loader extends Phaser.Scene {
         });
         this.anims.create({key: 'freeGames', frames: this.anims.generateFrameNames('freeGames')});
 
-        [...frameElems, ...fireBalls].forEach(i => {
+        [...symbols, ...fireBalls].forEach(i => {
             this.anims.create({
                 key: i,
                 frames: this.anims.generateFrameNames(i),

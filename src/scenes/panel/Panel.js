@@ -32,14 +32,13 @@ class Panel extends Phaser.Scene {
         // Создаём картинки
 
         Object.entries(imagesOptions).map(option => {
-            this[option[0]] = this.add.image(
-                option[1][device].x,
-                option[1][device].y,
-                option[0]
-            )
-                .setOrigin(option[1].origin.x, option[1].origin.y)
-                .setScale(option[1][device].scale)
-                .setVisible(option[1].visible !== false);
+            const {x, y, scale} = option[1][device];
+            const {origin, visible} = option[1];
+
+            this[option[0]] = this.add.image(x, y, option[0])
+                .setOrigin(origin.x, origin.y)
+                .setScale(scale)
+                .setVisible(visible !== false);
 
             panel.add(this[option[0]]);
         });
@@ -48,16 +47,11 @@ class Panel extends Phaser.Scene {
 
         Object.entries(buttonsOptions[device]).forEach(option => {
             const name = option[0][0].toLowerCase() + option[0].slice(1);
+            const {x, y, scale} = option[1];
 
             this[name] = this.add.existing(
                 new classes[option[0]](
-                    this,
-                    option[1].x,
-                    option[1].y,
-                    {
-                        x: option[1].scale,
-                        y: option[1].scale
-                    }
+                    this, x, y, {x: scale, y: scale}
                 )
             );
 
@@ -78,18 +72,14 @@ class Panel extends Phaser.Scene {
         // Создаём текст
 
         for (const option of Object.entries(textOptions)) {
+            const {font, text, color, originX, visible} = option[1];
+            const {x, y, size} = option[1][device];
+
             this[option[0]] = await game.scene.keys['Text'].setFont({
-                link: this,
-                x: option[1][device].x,
-                y: option[1][device].y,
-                size: option[1][device].size,
-                font: option[1].font,
-                text: option[1].text,
-                color: option[1].color,
-                originX: option[1].originX
+                link: this, x, y, size, font, text, color, originX
             });
 
-            this[option[0]].setVisible(option[1].visible !== false);
+            this[option[0]].setVisible(visible !== false);
 
             panel.add(this[option[0]]);
         }

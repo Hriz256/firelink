@@ -15,7 +15,7 @@ export const isMobile = /Android|webOS|iPhone|iPad|iPod|BlackBerry|IEMobile|Oper
 export const height = 940;
 export const gameWidth = 1920;
 export const offsetX = gameWidth / 2;
-export const frameElems = ['A', 'bell', 'guitar', 'J', 'food', 'K', 'nine', 'Q', 'skull', 'ten', 'picture'];
+export const symbols = ['A', 'bell', 'guitar', 'J', 'food', 'K', 'nine', 'Q', 'skull', 'ten', 'picture'];
 export const fireBalls = ['50x', '75x', '100x', '125x', '250x', '625x', 'mini'];
 
 const config = {
