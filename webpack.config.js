@@ -4,8 +4,8 @@ const {CleanWebpackPlugin} = require('clean-webpack-plugin');
 const CopyWebpackPlugin = require('copy-webpack-plugin');
 
 module.exports = {
-    context: path.resolve(__dirname, 'src'), // относительно какой папки мы работаем
-    mode: 'development', // иначе ставится продакшн и код минифицируется
+    context: path.resolve(__dirname, 'src'),
+    mode: 'development',
     entry: './Config.js',
     output: {
         filename: '[contenthash].js',
@@ -14,8 +14,18 @@ module.exports = {
     devServer: {
         port: 4200,
     },
+    optimization: {
+        splitChunks: {
+            chunks: 'all'
+        }
+    },
     plugins: [
-        new HTMLWebpackPlugin({template: './index.html'}),
+        new HTMLWebpackPlugin({
+            template: './index.html',
+            minify: {
+                collapseWhitespace: true
+            }
+        }),
         new CleanWebpackPlugin(),
         new CopyWebpackPlugin([
             {

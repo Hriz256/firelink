@@ -27,14 +27,11 @@ class FreeGames extends Phaser.Scene {
     }
 
     start() {
-        this['freeGamesText'].play('freeGamesText');
-        this['freeGamesMoneyDisplay'].play('freeGamesMoneyDisplay');
-
-        this.increaseOpacity();
+        this.increaseSceneOpacity();
         this.createConfetti();
     }
 
-    increaseOpacity() {
+    increaseSceneOpacity() {
         this.tweens.add({
             targets: this.container,
             ease: 'linear',
@@ -44,9 +41,15 @@ class FreeGames extends Phaser.Scene {
             onCompleteScope: this,
             onComplete() {
                 this.switchFreeGamesAnim();
+                this['freeGamesText'].play('freeGamesText');
+                this['freeGamesMoneyDisplay'].play('freeGamesMoneyDisplay');
                 game.scene.keys['OverlayWindow'].createFreeGamesFrame();
             }
         })
+    }
+
+    createConfetti() {
+        this.confetti = this.add.sprite(offsetX, height, 'confetti').setOrigin(0.5, 1).play('confetti');
     }
 
     finish() {
@@ -55,6 +58,7 @@ class FreeGames extends Phaser.Scene {
         this.time.delayedCall(
             game.scene.keys['Musics'].sounds['freeGamesEnd']().duration * 1000,
             () => {
+                this.currentSpin = 0;
                 game.scene.keys['OverlayWindow'].fade(this, true);
             },
             [],
@@ -70,16 +74,15 @@ class FreeGames extends Phaser.Scene {
         this['numbers'].setFrame(++this.currentSpin);
     }
 
-    createConfetti() {
-        this.confetti = this.add.sprite(offsetX, height, 'confetti').setOrigin(0.5, 1).play('confetti');
-    }
-
     togglePageVisibility(value) {
         this.scene[value ? 'wake' : 'sleep']();
         this.scene.setVisible(value);
         this.isFreeGamesStart = value;
 
-        !value && game.scene.keys['Slots'].freeGamesFrame.setAlpha(0);
+        if (!value) {
+            this.container.setAlpha(0);
+            game.scene.keys['Slots'].freeGamesFrame.setAlpha(0)
+        }
 
         game.scene.keys['Panel'].updateButtonsFrames();
     }
@@ -110,11 +113,19 @@ class FreeGames extends Phaser.Scene {
         );
 
         this.bgSound = game.scene.keys['Musics'].sounds['freeGamesBg']();
-        game.scene.keys['Slots'].hideFrame(0);
         game.scene.keys['Musics'].sounds['wind']();
-        game.scene.keys['MainWindow'].toggleTitlesVisibility(false);
+        game.scene.keys['Slots'].hideFrame(0);
         game.scene.keys['Slots'].destroyCells();
+        game.scene.keys['MainWindow'].toggleTitlesVisibility(false);
         game.scene.keys['MainWindow'].zoom(1.5, 2000);
+    }
+
+    runSlots() {
+        game.scene.keys['OverlayWindow'].frameAnim.destroy();
+        game.scene.keys['OverlayWindow'].pressToStart.destroy();
+        game.scene.keys['Slots'].freeGamesFrame.setAlpha(1);
+        game.scene.keys['Panel'].buttonsClicked.autoPlay = true;
+        this.bgSound.stop();
     }
 
     switchFreeGamesAnim() {
@@ -125,7 +136,6 @@ class FreeGames extends Phaser.Scene {
             ease: 'linear',
             scaleX: 0,
             duration: 150,
-            onCompleteScope: this,
             onComplete() {
                 game.scene.keys['OverlayWindow'].youWon.destroy();
                 game.scene.keys['OverlayWindow'].createPressToStart();

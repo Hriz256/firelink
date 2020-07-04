@@ -137,6 +137,7 @@ class OverlayWindow extends Phaser.Scene {
     fade(link, isFreeGames) {
         this.cameras.main.once('camerafadeoutcomplete', camera => {
             this.isAnimStart = false;
+            this.secondAnimStart = false;
             game.scene.keys['MainWindow'].refreshScene();
             game.scene.keys['Slots'].hideFrame(1);
             game.scene.keys['Slots'].updateCells();
@@ -158,7 +159,10 @@ class OverlayWindow extends Phaser.Scene {
     }
 
     createPressToStart() {
-        this.pressToStart = this.add.sprite(offsetX, isMobile ? 452 : 467, 'pressToStart').setOrigin(0.5, 0).setScale(0, 0.98).play('pressToStart');
+        this.pressToStart = this.add.sprite(offsetX, isMobile ? 452 : 467, 'pressToStart')
+            .setOrigin(0.5, 0)
+            .setScale(0, 0.98)
+            .play('pressToStart');
 
         this.tweens.add({
             targets: this.pressToStart,
@@ -167,16 +171,10 @@ class OverlayWindow extends Phaser.Scene {
             duration: 150,
             onCompleteScope: this,
             onComplete() {
-                this.input.once('pointerdown', () => {
-                    this.frameAnim.destroy();
-                    this.pressToStart.destroy();
-                    game.scene.keys['FreeGames'].bgSound.stop();
-                    game.scene.keys['FreeGames'].confetti.destroy();
-                    game.scene.keys['Panel'].updateButtonsFrames('autoPlay', true);
-                    game.scene.keys['Slots'].freeGamesFrame.setAlpha(1);
-                });
-
+                game.scene.keys['FreeGames'].confetti.destroy();
                 game.scene.keys['Slots'].updateCells();
+
+                this.input.once('pointerdown', game.scene.keys['FreeGames'].runSlots);
             }
         })
     }

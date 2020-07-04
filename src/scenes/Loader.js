@@ -269,7 +269,7 @@ class Loader extends Phaser.Scene {
     createAnims() {
         this.anims.create({key: 'blow', frames: this.anims.generateFrameNames('blow'), frameRate: 18});
         this.anims.create({key: 'exp', frames: this.anims.generateFrameNames('exp'), frameRate: 32});
-        this.anims.create({key: 'cellFire', frames: this.anims.generateFrameNames('cellFire'), frameRate: 18});
+        this.anims.create({key: 'cellFire', frames: this.anims.generateFrameNames('cellFire'), frameRate: 20});
         this.anims.create({key: 'borderFire', frames: this.anims.generateFrameNames('borderFire'), frameRate: 12});
         this.anims.create({key: 'freeGamesFrame', frames: this.anims.generateFrameNames('freeGamesFrame')});
         this.anims.create({key: 'pressToStart', frames: this.anims.generateFrameNames('pressToStart'), repeat: -1});

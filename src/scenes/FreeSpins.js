@@ -5,7 +5,7 @@ class FreeSpins extends Phaser.Scene {
     constructor() {
         super('FreeSpins');
 
-        this.rows = {};
+        this.unlocksArray = [];
 
         this.allow = true;
         this.isPressSpinToStartClicked = false;
@@ -64,8 +64,8 @@ class FreeSpins extends Phaser.Scene {
 
     update() {
         if (this.isPressSpinToStartClicked) {
-            this.getUnlockCells().forEach(i => {
-                if (i.isStart) i.cell.tilePositionY -= 50;
+            this.getUnlockCells().forEach(cell => {
+                if (cell.getData('isStart')) cell.tilePositionY -= 50;
             });
 
             !this.isEndOfTheGame && this.allowStart()
@@ -135,42 +135,50 @@ class FreeSpins extends Phaser.Scene {
         this.spinsRemainingText = this.add.image(offsetX, height - 154, 'spinsRemaining').setDepth(600).setFrame(0).setScale(0.9);
         this.sparks();
 
-        for (let i = 0; i < 8; i++) {
-            this.rows[`${i}`] = {};
+        this.cells = this.add.group();
 
-            for (let j = 0; j < 5; j++) {
-                this.rows[`${i}`][`${j}`] = {};
-                const y = this.array[Phaser.Math.Between(0, 17)];
+        // создаём ячейки
+        for (let i = 0; i < 40; i++) {
+            const y = this.array[Phaser.Math.Between(0, 17)]; // меняем сдвиг по y
+            const cell = this.add.tileSprite(0, 0, this.tileWidth, this.tileHeight, 'secondBar')
+                .setScale(0.53)
+                .setTilePosition(0, y)
+                .setDepth(this.isFireballOffset(y) ? 200 : 20); // над рамкой должны быть только фаерболлы
 
-                const cell = this.add.tileSprite(offsetX - 220 + (110 * j), 185 + (74 * i), this.tileWidth, this.tileHeight, 'secondBar')
-                    .setOrigin(0.5, 0)
-                    .setScale(0.53)
-                    .setDepth(this.isFireballOffset(y) ? 200 : 20);
+            cell.setData({isStart: false, isFireball: false});
 
-                cell.tilePositionY = y;
-
-                this.rows[`${i}`][`${j}`].cell = cell;
-                this.rows[`${i}`][`${j}`].isStart = false;
-                this.rows[`${i}`][`${j}`].isStop = false;
-            }
+            this.cells.add(cell);
         }
+
+        // размещаем в пределах рамки
+        Phaser.Actions.GridAlign(
+            this.cells.getChildren(),
+            {
+                width: 5,
+                height: 8,
+                cellWidth: 109,
+                cellHeight: 74,
+                x: offsetX - 287,
+                y: 190
+            }
+        );
 
         this.createUnlock();
     }
 
-    // создания оверлеев поверх первых 4 строк
+    // создание оверлеев поверх первых 4 строк
     createUnlock() {
         let numberLock = 4;
         let currentNumber = 4;
 
         const callback = (currentNumber) => {
             game.scene.keys['Musics'].sounds['block']();
-            const bg = this.add.image(0, 0, 'moreToUnlock').setOrigin(0.5).setScale(0.54);
-            const lock = this.add.image(-90, -2, 'locks').setOrigin(1, 0.5).setScale(0.47).setFrame(numberLock);
+            const bg = this.add.image(0, 0, 'moreToUnlock').setScale(0.54);
+            const lock = this.add.image(-90, -2, 'locks', numberLock).setOrigin(1, 0.5).setScale(0.47);
 
             lock.currentFrame = numberLock;
 
-            this.rows[`${currentNumber - 1}`].unlock = this.add.container(offsetX, 443 - (74 * (4 - currentNumber)), [bg, lock]).setDepth(300);
+            this.unlocksArray[currentNumber - 1] = this.add.container(offsetX, 443 - (74 * (4 - currentNumber)), [bg, lock]).setDepth(310);
             numberLock += 4;
 
             // как только создали все 4 оверлея - показываем надпись "press to spin"
@@ -206,31 +214,14 @@ class FreeSpins extends Phaser.Scene {
         })
     }
 
+    // по смещению тайлспрайта определяет остановилось на фаерболле или нет
     isFireballOffset(y) {
         const fireball = Object.entries(this.fireballNames).find(item => item[1] === y);
 
         return fireball && fireball[0]
     }
 
-    tilePos(elem, bool) {
-        game.scene.keys['Musics'].sounds['lineStop']();
-
-        const y = this.array[Phaser.Math.Between(0, 17)];
-        elem.cell.tilePositionY = y;
-
-        const fireball = this.isFireballOffset(y);
-
-        if (fireball && !bool) {
-            game.scene.keys['Musics'].sounds['fireDrop']();
-            elem.isStop = true;
-            this.createExp(elem.cell, fireball);
-            this.setLockFrame();
-        } else {
-            elem.cell.setDepth(20);
-        }
-    }
-
-    setSpinsRemainingFrame(frame = false) {
+    setSpinsRemainingFrame(frame) {
         const quantityFrames = 4;
         const newFrame = !frame ? quantityFrames - --this.spinsRemaining : 0;
 
@@ -270,68 +261,77 @@ class FreeSpins extends Phaser.Scene {
     }
 
     setLockFrame() {
-        const array = Object.values(this.rows).filter(row => row.unlock);
+        const unlocksArray = this.unlocksArray.filter(row => row);
 
-        if (array.length) {
-            array.forEach(i => {
-                const frame = --i.unlock.list[1].currentFrame;
-                frame > 0 ? i.unlock.list[1].setFrame(frame) : this.destroyUnlockImages(i)
+        if (unlocksArray.length) {
+            unlocksArray.forEach(container => {
+                const frame = --container.list[1].currentFrame;
+                frame > 0 ? container.list[1].setFrame(frame) : this.destroyUnlockImages(container)
             });
         }
     }
 
-    destroyUnlockImages(row) {
-        this.destroyGlass(row.unlock.y);
-        row.unlock.destroy();
-        delete row.unlock;
+    destroyUnlockImages(container) {
+        this.destroyGlass(container.y);
+        container.destroy();
+        this.unlocksArray.pop();
 
-        if (++this.destroyedGlasses === 4) this.isEndOfTheGame = true;
+        if (++this.destroyedGlasses === 4) {
+            this.isEndOfTheGame = true;
+        }
     }
 
     allowStart() {
-        this.isEvery() && this.startSpin()
+        this.isEveryStop() && this.startSpin()
     }
 
     startSpin() {
         if (this.allow && Date.now() - this.spinDate > 350) {
             game.scene.keys['Musics'].sounds['fireLaser']();
             this.allow = false;
-            this.changeStart(true, 0);
+            this.changeStart(true);
             this.events.once('increaseSpinClick', () => game.scene.keys['MainWindow'].increaseCountSpinClick());
-            this.setSpinsRemainingFrame();
+            this.setSpinsRemainingFrame(false);
 
             this.time.delayedCall(2000, this.endSpin, [], this);
         }
     }
 
     createCellFire(x, y) {
-        const cellFire = this.add.sprite(x, y, 'cellFire').setScale(0.36).setOrigin(0.5, 0).play('cellFire');
-        cellFire.once('animationcomplete', () => cellFire.destroy());
+        const cellFire = this.add.sprite(x, y, 'cellFire').setScale(0.36).setDepth(330).play('cellFire');
+        cellFire.once('animationcomplete', cellFire.destroy);
     }
 
     createBlow(x, y) {
-        const blow = this.add.sprite(x, y, 'blow').setScale(0.45).setOrigin(0.5, 0.5).setDepth(500).play('blow');
-        blow.once('animationcomplete', () => blow.destroy());
+        const blow = this.add.sprite(x, y, 'blow').setScale(0.45).setDepth(500).play('blow');
+        blow.once('animationcomplete', blow.destroy);
     }
 
     createBorderFire() {
         const borderFire = this.add.sprite(offsetX - 2, 445, 'borderFire').setScale(0.46).setDepth(400).play('borderFire');
-        borderFire.once('animationcomplete', () => borderFire.destroy());
+        borderFire.once('animationcomplete', borderFire.destroy);
+    }
+
+    sparks() {
+        game.scene.keys['Musics'].sounds['spinsRemaining']();
+
+        const sparks = this.add.sprite(offsetX, height - 155, 'sparks').setScale(0.57).setDepth(600).play('sparks');
+        sparks.once('animationcomplete', sparks.destroy);
     }
 
     createExp(cell, fireballName) {
         const {x, y, height, scaleY} = cell;
-        const fireball = this.add.sprite(x, y + (height * scaleY) / 2 - 7, fireballName)
+
+        this.add.sprite(x, y - 7, fireballName)
             .setScale(0.53)
             .setDepth(250)
+            .setMask(this.createMask(x - this.tileWidth / 2, y - (height * scaleY) / 2 - 2))
             .play(fireballName);
 
-        fireball.setMask(this.createMask(x - this.tileWidth / 2, y - 2));
+        const exp = this.add.sprite(x, y, 'exp').setScale(0.42).setDepth(290).play('exp');
+        exp.once('animationcomplete', exp.destroy);
 
-        const exp = this.add.sprite(x, y + (height * scaleY) / 2, 'exp').setScale(0.42).setDepth(250).play('exp');
-        exp.once('animationcomplete', () => exp.destroy());
-
-        cell.destroy(); // удаляем тайлспрайт из-за ненадобности
+        cell.setVisible(false); // прячем тайлспрайт
     }
 
     destroyGlass(offsetY) {
@@ -353,17 +353,11 @@ class FreeSpins extends Phaser.Scene {
         });
     }
 
-    sparks() {
-        game.scene.keys['Musics'].sounds['spinsRemaining']();
-
-        const sparks = this.add.sprite(offsetX, height - 155, 'sparks').setScale(0.57, 0.57).setDepth(600).play('sparks');
-        sparks.once('animationcomplete', () => sparks.destroy());
-    }
-
-    flyingBalls(item, resolve) {
+    flyingBalls(cell, resolve) {
         const x = [offsetX - 120, offsetX, offsetX + 120][Phaser.Math.Between(0, 2)]; // фаерболы могут лететь только в 3 точки
         const y = 150;
-        const ball = this.add.sprite(item.cell.x, item.cell.y + (item.cell.height * item.cell.scaleY) / 2, '50x')
+
+        const ball = this.add.sprite(cell.x, cell.y, cell.getData('fireball'))
             .setScale(0.53)
             .setDepth(500)
             .setAlpha(0);
@@ -376,10 +370,11 @@ class FreeSpins extends Phaser.Scene {
             delay: 1300,
             onStartScope: this,
             onCompleteScope: this,
+
             onStart() {
                 game.scene.keys['Musics'].sounds['fireBallPush']();
                 ball.setAlpha(1);
-                this.createCellFire(item.cell.x, item.cell.y);
+                this.createCellFire(cell.x, cell.y - 2);
                 this.createBlow(x, y);
                 this.createBorderFire();
             },
@@ -400,13 +395,12 @@ class FreeSpins extends Phaser.Scene {
 
         const callback = () => {
             this.freeSpinStart = false;
-            game.scene.keys['OverlayWindow'].secondAnimStart = false;
             game.scene.keys['OverlayWindow'].fade(this, false);
         };
 
         (async () => {
-            for (const item of this.getFireballs()) {
-                await new Promise(resolve => this.flyingBalls(item, resolve));
+            for (const cell of this.getFireballs()) {
+                await new Promise(resolve => this.flyingBalls(cell, resolve));
             }
 
             this.time.delayedCall(game.scene.keys['Musics'].sounds['freeSpinsEnd']().duration * 1000 + 3000, callback, [], this)
@@ -426,38 +420,46 @@ class FreeSpins extends Phaser.Scene {
         });
     };
 
-    isEvery() {
-        return this.getUnlockCells().every(i => !i.isStart)
-    }
-
-    getCells() {
-        return Object.values(this.rows)
-            .reduce((acc, item) => {
-                return [
-                    ...acc,
-                    ...Object.values(item).filter(i => typeof i === 'object' && i.type !== 'Container')
-                ]
-            }, [])
+    isEveryStop() {
+        return this.cells.getChildren().every(cell => !cell.getData('isStart'))
     }
 
     getFireballs() {
-        return this.getCells().filter(i => i.isStop);
+        return this.cells.getChildren().filter(cell => cell.getData('fireball'));
     }
 
     getUnlockCells() {
-        return this.getCells().filter(i => !i.isStop);
+        return this.cells.getChildren().filter(cell => !cell.getData('fireball'));
     }
 
     endSpin() {
-        this.changeStart(false, 200);
+        this.changeStart(false);
     }
 
     toggleCellMovement(cell, value) {
-        cell.isStart = value;
+        cell.setData('isStart', value);
         this.tilePos(cell, value);
     }
 
-    changeStart(value, time) {
+    tilePos(cell, value) {
+        game.scene.keys['Musics'].sounds['lineStop']();
+
+        const y = this.array[Phaser.Math.Between(0, 17)];
+        cell.setTilePosition(0, y);
+
+        const fireball = this.isFireballOffset(y);
+
+        if (fireball && !value) {
+            game.scene.keys['Musics'].sounds['fireDrop']();
+            cell.setData('fireball', fireball);
+            this.createExp(cell, fireball);
+            this.setLockFrame();
+        } else {
+            cell.setDepth(20);
+        }
+    }
+
+    changeStart(value) {
         const quantityFireballs = this.getFireballs().length;
         const unlockCells = this.getUnlockCells();
 
@@ -466,13 +468,14 @@ class FreeSpins extends Phaser.Scene {
         const callback = () => {
             this.toggleCellMovement(unlockCells[index], value);
 
-            if (this.isEvery()) {
+            if (this.isEveryStop()) {
                 this.allow = true;
                 this.spinDate = Date.now();
-
                 this.events.emit('increaseSpinClick');
 
+                // если количество фаерболлов увеличилось, - увеличиваем spinsRemaining
                 this.getFireballs().length - quantityFireballs > 0 && this.setSpinsRemainingFrame(true);
+
                 this.isEndOfTheGame && this.finishTheGame();
             }
 
@@ -480,12 +483,10 @@ class FreeSpins extends Phaser.Scene {
         };
 
         value ?
-            unlockCells.forEach((cell) => this.toggleCellMovement(cell, value)) :
+            unlockCells.forEach(cell => this.toggleCellMovement(cell, value)) :
             this.time.addEvent({
-                delay: time,
-                callback() {
-                    callback();
-                },
+                delay: 200,
+                callback,
                 repeat: unlockCells.length - 1,
                 startAt: 0
             });
