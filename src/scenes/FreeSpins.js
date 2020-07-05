@@ -9,7 +9,7 @@ class FreeSpins extends Phaser.Scene {
 
         this.allow = true;
         this.isPressSpinToStartClicked = false;
-        this.spinDate = 0;
+        this.allowNextSpin = true;
         this.isEndOfTheGame = false;
         this.freeSpinStart = false;
 
@@ -132,7 +132,7 @@ class FreeSpins extends Phaser.Scene {
     createCells() {
         this.bgSound = game.scene.keys['Musics'].sounds['freeSpinsBg']();
 
-        this.spinsRemainingText = this.add.image(offsetX, height - 154, 'spinsRemaining').setDepth(600).setFrame(0).setScale(0.9);
+        this.spinsRemainingText = this.add.image(offsetX, height - 154, 'spinsRemaining', 0).setDepth(600).setScale(0.9);
         this.sparks();
 
         this.cells = this.add.group();
@@ -286,9 +286,10 @@ class FreeSpins extends Phaser.Scene {
     }
 
     startSpin() {
-        if (this.allow && Date.now() - this.spinDate > 350) {
+        if (this.allow && this.allowNextSpin) {
             game.scene.keys['Musics'].sounds['fireLaser']();
             this.allow = false;
+            this.allowNextSpin = false;
             this.changeStart(true);
             this.events.once('increaseSpinClick', () => game.scene.keys['MainWindow'].increaseCountSpinClick());
             this.setSpinsRemainingFrame(false);
@@ -470,7 +471,7 @@ class FreeSpins extends Phaser.Scene {
 
             if (this.isEveryStop()) {
                 this.allow = true;
-                this.spinDate = Date.now();
+                this.time.delayedCall(350, () => this.allowNextSpin = true, [], this);
                 this.events.emit('increaseSpinClick');
 
                 // если количество фаерболлов увеличилось, - увеличиваем spinsRemaining

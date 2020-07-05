@@ -20,13 +20,12 @@ class SpinButton extends Button {
 
         this.on('pointerup', () => {
             if (!game.scene.keys['Panel'].buttonsClicked.autoPlay && !game.scene.keys['FreeSpins'].freeSpinStart && !game.scene.keys['FreeGames'].isFreeGamesStart) {
-                if (game.scene.keys['Panel'].buttonsClicked.spin) {
+                if (game.scene.keys['Panel'].buttonsClicked.spin && !game.scene.keys['Slots'].isStopClicked) {
                     game.scene.keys['Slots'].allowStart();
-                    game.scene.keys['Panel'].toggleVolumeAndRulesContainerVisibility(false);
-                    game.scene.keys['Panel'].updateButtonsFrames('spin', false);
+                    game.scene.keys['Slots'].isStopClicked = true;
                 }
 
-                if (!game.scene.keys['Panel'].buttonsClicked.spin && game.scene.keys['Slots'].allowRepeatSpin()) {
+                if (!game.scene.keys['Panel'].buttonsClicked.spin && !game.scene.keys['Slots'].endSpinTimer) {
                     game.scene.keys['Slots'].allowStart();
                     game.scene.keys['Panel'].toggleVolumeAndRulesContainerVisibility(false);
                     game.scene.keys['Panel'].updateButtonsFrames('spin', true);
